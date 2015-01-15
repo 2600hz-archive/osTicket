@@ -297,11 +297,19 @@ class Ticket {
 
     //Returns true if SLA says ticket is overdue
     function checkSLADue() {
+        if (!$this->getSLA()) {
+            return false;
+        }
+
         return $this->getSLAHours() < 0 ? true : false;
     }
 
     //returns the number of hours left till SLA is overdue or the number of hours it is overdue
     function getSLAHours() {
+        if (!$this->getSLA()) {
+            return "No SLA";
+        }
+
         $dept = $this->getDept();
         //Department has hours of operation set
         if($dept->hasWorkingHours()) {
@@ -526,7 +534,6 @@ class Ticket {
     }
 
     function getSLA() {
-
         if(!$this->sla && $this->getSLAId())
             $this->sla = SLA::lookup($this->getSLAId());
 

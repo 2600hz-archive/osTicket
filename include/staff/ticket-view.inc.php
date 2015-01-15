@@ -272,7 +272,7 @@ if($ticket->isOverdue())
                     <th>SLA Plan:</th>
                     <td>
 			<?php echo $sla?Format::htmlchars($sla->getName()):'<span class="faded">&mdash; none &mdash;</span>'; ?>
-			<?php echo $sla->isRevolving()?' (revolving)':''; ?>
+			<?php echo ($sla && $sla->isRevolving())?' (revolving)':''; ?>
 		    </td>
                 </tr>
                 <?php
