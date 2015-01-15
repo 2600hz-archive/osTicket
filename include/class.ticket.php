@@ -1790,9 +1790,23 @@ class Ticket {
         if(isset($vars['reply_ticket_status']) && $vars['reply_ticket_status'])
             $this->setStatus($vars['reply_ticket_status']);
 
+        /* Original functionality of direct ticket assignment
         if($thisstaff && $this->isOpen() && !$this->getStaffId()
                 && $cfg->autoClaimTickets())
             $this->setStaffId($thisstaff->getId()); //direct assignment;
+        */
+
+        /*
+           Modified direct ticket assignment to catch the case where 
+           postReply() is called for an email response.
+        */
+        if($this->isOpen() && !$this->getStaffId() && $cfg->autoClaimTickets())
+        {
+            if($thisstaff)
+                $this->setStaffId($thisstaff->getId());
+            else if($vars['staffId'])
+                $this->setStaffId($vars['staffId']);
+        }
 
         $this->onResponse(); //do house cleaning..
 

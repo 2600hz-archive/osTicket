@@ -710,8 +710,13 @@ Class ThreadEntry {
                 || ($mailinfo['staffId'] = Staff::getIdByEmail($mailinfo['email']))) {
             $vars['staffId'] = $mailinfo['staffId'];
             $poster = Staff::lookup($mailinfo['staffId']);
+            /* Original code that makes email replies and internal note
             $vars['note'] = $body;
             return $ticket->postNote($vars, $errors, $poster);
+            */
+            /* Code to change email repies to replies to customer */
+            $vars['response'] = $body;
+            return $ticket->postReply($vars, $errors);
         }
         elseif (Email::getIdByEmail($mailinfo['email'])) {
             // Don't process the email -- it came FROM this system
