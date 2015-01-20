@@ -991,13 +991,7 @@ Class ThreadEntry {
         $strippedEmail = strstr($vars['body'], '</div>', true);
         if($strippedEmail != "")
             $vars['body'] = $strippedEmail . '</div>';
-
-        // Close ticket if #close is in the subject
-        if(strpos($vars, "#close") !== false) {
-            $ticket = $this->getTicket();
-            $ticket->close();
-        }
-
+        
         if (!$vars['body'] instanceof ThreadBody) {
             if ($cfg->isHtmlThreadEnabled())
                 $vars['body'] = new HtmlThreadBody($vars['body']);
@@ -1110,6 +1104,12 @@ Class ThreadEntry {
 
         // Inline images (attached to the draft)
         $entry->saveAttachments(Draft::getAttachmentIds($body));
+
+        // Close ticket if #close is in the subject
+        if(strpos($vars['header'], "#close") !== FALSE) {
+            $ticket = $this->getTicket();
+            $ticket->close();
+        }
 
         return $entry;
     }
