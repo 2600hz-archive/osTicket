@@ -992,6 +992,12 @@ Class ThreadEntry {
         if($strippedEmail != "")
             $vars['body'] = $strippedEmail . '</div>';
 
+        // Close ticket if #close is in the subject
+        if(strpos($vars, "#close") !== false) {
+            $ticket = $this->getTicket();
+            $ticket->close();
+        }
+
         if (!$vars['body'] instanceof ThreadBody) {
             if ($cfg->isHtmlThreadEnabled())
                 $vars['body'] = new HtmlThreadBody($vars['body']);
