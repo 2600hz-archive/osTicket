@@ -1665,9 +1665,27 @@ class Ticket {
 
         $dept = $this->getDept();
 
+            $threadTypes=array('M'=>'message','R'=>'response');
+            /* -------- Messages & Responses & Notes (if inline)-------------*/
+            $types = array('M', 'R');
+            $older_replies = '<br><br>------Ticket Thread History------<br><br><table>';
+            if(($thread=$this->getThreadEntries($types))) {
+                   foreach($thread as $entry) {
+                        $older_replies .= "<tr>";
+                        $older_replies .= "<td width=\"150px\">" . Format::htmlchars($entry['name'] ?: $entry['poster']) . "<br>\n";
+                        $older_replies .= Format::db_datetime($entry['created']) . "</td>";
+                        $older_replies .= "<td>" . $entry['body']->toHtml() . "</td></tr>"; 
+                   }
+            } else {
+                // TODO - Better error handling. DARREN
+                echo '<p>Error fetching ticket thread - get technical help.</p>';
+            }
+            $older_replies .= "</table><br>\n";
+
+        //$message .= $older_replies;
 
         $variables = array(
-                'message' => $message,
+                'message' => $message.$older_replies,
                 'poster' => ($vars['poster'] ? $vars['poster'] : $this->getName())
                 );
         $options = array(
@@ -1707,33 +1725,11 @@ class Ticket {
                     $recipients[] = $acct_manager;
             }
             
-
-
-            $threadTypes=array('M'=>'message','R'=>'response');
-            /* -------- Messages & Responses & Notes (if inline)-------------*/
-            $types = array('M', 'R');
-            $older_replies = '';
-            if(($thread=$this->getThreadEntries($types))) {
-                   foreach($thread as $entry) {
-                        $older_replies .= 'Message Type: ' . $threadTypes[$entry['thread_type']] . "<br>\n"; 
-                        $older_replies .= 'Date/Time: ' . Format::db_datetime($entry['created']) . "<br>\n";
-                        $older_replies .= Format::truncate($entry['title'], 100) . "<br>\n"; 
-                        $older_replies .= Format::htmlchars($entry['name'] ?: $entry['poster']) . "<br>\n";
-                        $older_replies .= "ID#" . $entry['id'] . "<br>\n";
-                        $older_replies .= "Message Body: " . $entry['body']->toHtml() . "<br><br>\n\n"; 
-                   }
-            } else {
-                // TODO - Better error handling. DARREN
-                echo '<p>Error fetching ticket thread - get technical help.</p>';
-            }
-           
-            $alerts['body'] .= "<br>\n<br>\n----------------------------<br>\n<br>\n" . $older_replies;
-
             $sentlist=array(); //I know it sucks...but..it works.
             foreach( $recipients as $k=>$staff) {
                 if(!$staff || !$staff->getEmail() || !$staff->isAvailable() || in_array($staff->getEmail(), $sentlist)) continue;
                 $alert = $this->replaceVars($msg, array('recipient' => $staff));
-                $email->sendAlert($staff->getEmail(), $alert['subj'], $alert['body'] . "--- PREVIOUS STUFF ---<br><br>\n\n" . $older_replies, null, $options);
+                $email->sendAlert($staff->getEmail(), $alert['subj'], $alert['body'], null, $options);
                 $sentlist[] = $staff->getEmail();
             }
         }
