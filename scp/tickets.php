@@ -129,6 +129,12 @@ if($_POST && !$errors):
                 //If no errors - them attempt the transfer.
                 if(!$errors && $ticket->transfer($_POST['deptId'], $_POST['transfer_comments'])) {
                     $msg = sprintf(__('Ticket transferred successfully to %s'),$ticket->getDeptName());
+                    
+                    // EDIT DARREN: Release the currently assigned owner of the ticket
+                    $ticket->release();
+                    $ticket->markUnAnswered();
+                    $ticket->logActivity('Ticket unassigned','Automatically put back into the queue for the taking in new department.');
+
                     //Check to make sure the staff still has access to the ticket
                     if(!$ticket->checkStaffAccess($thisstaff))
                         $ticket=null;

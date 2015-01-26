@@ -65,6 +65,27 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
             </td>
         </tr>
         <tr>
+            <td>
+                <strong>Revolving SLA:</strong>
+            </td>
+            <td>
+                <input type="checkbox" name="revolving" value="1" <?php echo $info['revolving']?'checked="checked"':''; ?> >
+                SLA for unanswered tickets is based on last response instead of ticket creation date.
+                <br/>
+                <input type="checkbox" name="ignore_answered" value="1" <?php echo $info['ignore_answered']?'checked="checked"':''; ?> >
+		Revolving SLA doesn't flag answered tickets as overdue
+	    </td>
+        </tr>
+        <tr>
+            <td>
+                Honors Department Hours:
+            </td>
+            <td>
+                <input type="checkbox" name="open_hours_only" value="1" <?php echo $info['open_hours_only']?'checked="checked"':''; ?> >
+                If department has operating hours set, only count hours during open hours.
+            </td>
+        </tr>
+        <tr>
             <td width="180">
                 <?php echo __('Transient'); ?>:
             </td>

@@ -714,8 +714,13 @@ Class ThreadEntry {
                 || ($mailinfo['staffId'] = Staff::getIdByEmail($mailinfo['email']))) {
             $vars['staffId'] = $mailinfo['staffId'];
             $poster = Staff::lookup($mailinfo['staffId']);
+            /* Original code that makes email replies and internal note
             $vars['note'] = $body;
             return $ticket->postNote($vars, $errors, $poster);
+            */
+            /* Code to change email repies to replies to customer */
+            $vars['response'] = $body;
+            return $ticket->postReply($vars, $errors);
         }
         elseif (Email::getIdByEmail($mailinfo['email'])) {
             // Don't process the email -- it came FROM this system
@@ -999,7 +1004,11 @@ Class ThreadEntry {
         if(!$vars['ticketId'] || !$vars['type'] || !in_array($vars['type'], array('M','R','N')))
             return false;
 
-
+        // Added to strip email body to the message only
+        $strippedEmail = strstr($vars['body'], '</div>', true);
+        if($strippedEmail != "")
+            $vars['body'] = $strippedEmail . '</div>';
+        
         if (!$vars['body'] instanceof ThreadBody) {
             if ($cfg->isHtmlThreadEnabled())
                 $vars['body'] = new HtmlThreadBody($vars['body']);
@@ -1114,6 +1123,11 @@ Class ThreadEntry {
         $entry->saveAttachments(Draft::getAttachmentIds($body));
 
         Signal::send('model.created', $entry);
+        // Close ticket if #close is in the subject
+        if(strpos($vars['header'], "#close") !== FALSE) {
+            $ticket = $this->getTicket();
+            $ticket->close();
+        }
 
         return $entry;
     }
