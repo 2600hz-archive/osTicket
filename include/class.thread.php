@@ -1121,12 +1121,12 @@ Class ThreadEntry {
 
         // Inline images (attached to the draft)
         $entry->saveAttachments(Draft::getAttachmentIds($body));
-
         Signal::send('model.created', $entry);
+        
         // Close ticket if #close is in the subject
         if(strpos($vars['header'], "#close") !== FALSE) {
             $ticket = $this->getTicket();
-            $ticket->close();
+            $ticket->setStatus("3");
         }
 
         return $entry;
