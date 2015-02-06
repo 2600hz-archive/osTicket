@@ -1005,9 +1005,9 @@ Class ThreadEntry {
             return false;
 
         // Added to strip email body to the message only
-        $strippedEmail = strstr($vars['body'], '</div>', true);
-        if($strippedEmail != "")
-            $vars['body'] = $strippedEmail . '</div>';
+//        $strippedEmail = strstr($vars['body'], '</div>', true);
+//        if($strippedEmail != "")
+//            $vars['body'] = $strippedEmail . '</div>';
         
         if (!$vars['body'] instanceof ThreadBody) {
             if ($cfg->isHtmlThreadEnabled())
