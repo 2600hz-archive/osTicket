@@ -1540,8 +1540,25 @@ class Ticket {
                      && ($tpl = $dept->getTemplate())
                      && ($msg=$tpl->getTransferAlertMsgTemplate())) {
 
+            $threadTypes=array('M'=>'message','R'=>'response');
+            /* -------- Messages & Responses & Notes (if inline)-------------*/
+            $types = array('M', 'R');
+            $older_replies = '<br><br>------Ticket Thread History------<br><br><table>';
+            if(($thread=$this->getThreadEntries($types))) {
+                   foreach($thread as $entry) {
+                        $older_replies .= "<tr>";
+                        $older_replies .= "<td width=\"150px\">" . Format::htmlchars($entry['name'] ?: $entry['poster']) . "<br>\n";
+                        $older_replies .= Format::db_datetime($entry['created']) . "</td>";
+                        $older_replies .= "<td>" . $entry['body']->toHtml() . "</td></tr>";
+                   }
+            } else {
+                // TODO - Better error handling. DARREN
+                echo '<p>Error fetching ticket thread - get technical help.</p>';
+            }
+            $older_replies .= "</table><br>\n";
+
             $msg = $this->replaceVars($msg->asArray(),
-                array('comments' => $comments, 'staff' => $thisstaff));
+                array('comments' => $comments.$older_replies, 'staff' => $thisstaff));
             //recipients
             $recipients=array();
             //Assigned staff or team... if any
