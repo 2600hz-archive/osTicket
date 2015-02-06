@@ -584,6 +584,14 @@ print $response_form->getField('attachments')->render();
             </tr>
             <tr>
                 <td width="120">
+                    <label for="mark_answered" class="left">Mark Answered:</label>
+                </td>
+                <td>
+                    <input type="checkbox" name="mark_answered" value="true">
+                </td>
+            </tr>
+            <tr>
+                <td width="120">
                     <label for="signature" class="left"><?php echo __('Signature');?>:</label>
                 </td>
                 <td>

@@ -1132,8 +1132,8 @@ class Ticket {
         return true;
     }
 
-    function onResponse() {
-        db_query('UPDATE '.TICKET_TABLE.' SET isanswered=1, lastresponse=NOW(), updated=NOW() WHERE ticket_id='.db_input($this->getId()));
+    function onResponse($mark_answered = TRUE) {
+        db_query('UPDATE '.TICKET_TABLE.' SET isanswered= ' . $mark_answered . ', lastresponse=NOW(), updated=NOW() WHERE ticket_id='.db_input($this->getId()));
 
 	    //Clear overdue flag if SLA is revolving..
         if($this->isOverdue() && $this->getSLA()->isRevolving() && !$this->checkSLADue() ) {
@@ -1926,7 +1926,7 @@ class Ticket {
                 $this->setStaffId($vars['staffId']);
         }
 
-        $this->onResponse(); //do house cleaning..
+        $this->onResponse($vars['mark_answered']); //do house cleaning..
 
         /* email the user??  - if disabled - then bail out */
         if(!$alert) return $response;

@@ -78,6 +78,7 @@ if($_POST && !$errors):
             //If no error...do the do.
             $vars = $_POST;
             $vars['cannedattachments'] = $response_form->getField('attachments')->getClean();
+            $vars['mark_answered'] = (isset($_POST['mark_answered']) && $_POST['mark_answered'] == 'true' ? TRUE : FALSE);
 
             if(!$errors && ($response=$ticket->postReply($vars, $errors, $_POST['emailreply']))) {
                 $msg = sprintf(__('%s: Reply posted successfully'),
